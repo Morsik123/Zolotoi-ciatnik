@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Золотой Цитатник — Место, где слова живут вечно</title>
+  <meta name="description" content="Золотой Цитатник — оставьте свою цитату навсегда. Место, где каждое слово вечно." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #C9A84C;
+      --gold-light: #F0D080;
+      --gold-dark: #8B6914;
+      --ink: #1A1209;
+      --parchment: #FBF5E6;
+      --parchment-dark: #F0E8D0;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--parchment);
+      font-family: 'EB Garamond', Georgia, serif;
+      color: var(--ink);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .site {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 5rem;
+    }
+
+    /* ── Header ── */
+    .header {
+      text-align: center;
+      padding: 2.5rem 1rem 2rem;
+      border-bottom: 2px solid var(--gold);
+      margin-bottom: 2.5rem;
+      position: relative;
+    }
+    .header::before, .header::after {
+      content: '✦';
+      color: var(--gold);
+      font-size: 1.2rem;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    .header::before { left: 0; }
+    .header::after  { right: 0; }
+    .ornament { color: var(--gold); font-size: 1.4rem; margin: .5rem 0; display: block; }
+    .site-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 6vw, 3rem);
+      color: var(--ink);
+      letter-spacing: .04em;
+      line-height: 1.2;
+    }
+    .site-title span { color: var(--gold-dark); }
+    .site-subtitle { font-size: 1.1rem; color: #6B5A3A; margin-top: .5rem; font-style: italic; }
+
+    /* ── Form ── */
+    .add-form {
+      background: #fff;
+      border: 1px solid #DDD0B0;
+      border-radius: 6px;
+      padding: 2rem;
+      margin-bottom: 2.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .add-form::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--gold-dark), var(--gold-light), var(--gold-dark));
+    }
+    .form-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      color: var(--ink);
+      margin-bottom: 1.5rem;
+    }
+    .form-title::before { content: '✒ '; color: var(--gold-dark); }
+    .form-row { margin-bottom: 1.1rem; }
+    .form-row label {
+      display: block;
+      font-size: .82rem;
+      color: #6B5A3A;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      margin-bottom: .35rem;
+    }
+    .form-row input,
+    .form-row textarea {
+      width: 100%;
+      border: 1px solid #D4C99A;
+      border-radius: 3px;
+      padding: .6rem .85rem;
+      font-family: 'EB Garamond', serif;
+      font-size: 1.05rem;
+      background: #FDFAF3;
+      color: var(--ink);
+      outline: none;
+      transition: border-color .2s;
+    }
+    .form-row input:focus,
+    .form-row textarea:focus { border-color: var(--gold); }
+    .form-row textarea { resize: vertical; min-height: 90px; line-height: 1.65; }
+    .char-hint { font-size: .8rem; color: #9C8860; text-align: right; margin-top: .25rem; }
+
+    .submit-btn {
+      background: var(--gold-dark);
+      color: #FBF5E6;
+      border: none;
+      border-radius: 3px;
+      padding: .65rem 2rem;
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      cursor: pointer;
+      letter-spacing: .05em;
+      transition: background .2s, opacity .2s;
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      margin-top: .4rem;
+    }
+    .submit-btn:hover { background: var(--gold); }
+    .submit-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+    .msg {
+      margin-top: .9rem;
+      padding: .7rem 1rem;
+      border-radius: 3px;
+      font-size: .92rem;
+      display: none;
+    }
+    .msg-success { background: #F0EDD6; border: 1px solid var(--gold); color: #5A4A1A; font-style: italic; }
+    .msg-error   { background: #FEF3E2; border: 1px solid #D08030; color: #6B3A0A; }
+
+    /* ── Quotes list ── */
+    .quotes-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .quotes-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      white-space: nowrap;
+    }
+    .quotes-count {
+      background: var(--gold-dark);
+      color: #FBF5E6;
+      border-radius: 20px;
+      padding: .15rem .7rem;
+      font-size: .85rem;
+    }
+    .divider { flex: 1; height: 1px; background: linear-gradient(90deg, #C9A84C, transparent); }
+
+    .quotes-list { display: flex; flex-direction: column; gap: 1.5rem; }
+
+    .quote-card {
+      background: #fff;
+      border: 1px solid #DDD0B0;
+      border-radius: 4px;
+      padding: 1.5rem 1.75rem;
+      position: relative;
+      animation: fadeIn .4s ease;
+    }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+
+    .quote-num {
+      position: absolute;
+      top: .75rem; right: .9rem;
+      font-size: .78rem;
+      color: var(--gold);
+      font-family: 'Playfair Display', serif;
+    }
+    .quote-card::before {
+      content: '❝';
+      position: absolute;
+      top: .4rem; left: .75rem;
+      font-size: 3rem;
+      color: #EDE0C0;
+      line-height: 1;
+      pointer-events: none;
+    }
+    .quote-text {
+      font-size: 1.2rem;
+      line-height: 1.75;
+      font-style: italic;
+      padding-left: .5rem;
+      margin-bottom: 1rem;
+    }
+    .quote-story {
+      font-size: .92rem;
+      color: #6B5A3A;
+      padding: .55rem .85rem;
+      background: #FDFAF3;
+      border-left: 3px solid var(--gold);
+      border-radius: 0 3px 3px 0;
+      margin-bottom: .9rem;
+      font-style: italic;
+      line-height: 1.55;
+    }
+    .quote-meta {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      border-top: 1px solid #EDE0C0;
+      padding-top: .75rem;
+    }
+    .quote-author {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      color: var(--gold-dark);
+      font-weight: 700;
+    }
+    .quote-date { font-size: .8rem; color: #9C8860; margin-left: auto; }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: #9C8860;
+      font-style: italic;
+      font-size: 1.1rem;
+    }
+    .loading { text-align: center; padding: 2rem; color: var(--gold-dark); font-style: italic; }
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center;
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #DDD0B0;
+      color: #9C8860;
+      font-size: .9rem;
+      font-style: italic;
+    }
+    .footer strong { color: var(--gold-dark); font-style: normal; }
+
+    @media (max-width: 480px) {
+      .header::before, .header::after { display: none; }
+      .add-form { padding: 1.4rem; }
+      .quote-card { padding: 1.25rem 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="site">
+
+    <header class="header">
+      <span class="ornament">❧</span>
+      <h1 class="site-title">Золотой <span>Цитатник</span></h1>
+      <p class="site-subtitle">Место, где слова живут вечно</p>
+      <span class="ornament">❧</span>
+    </header>
+
+    <section class="add-form" id="addForm">
+      <div class="form-title">Оставить свою цитату</div>
+      <div class="msg msg-error" id="msgError"></div>
+
+      <div class="form-row">
+        <label for="quoteText">Цитата *</label>
+        <textarea id="quoteText" name="quoteText" maxlength="500"
+          placeholder="Напишите здесь слова, которые хотите оставить навечно..."></textarea>
+        <div class="char-hint"><span id="charCount">0</span> / 500</div>
+      </div>
+
+      <div class="form-row">
+        <label for="authorName">Имя *</label>
+        <input id="authorName" name="authorName" type="text" maxlength="80"
+          placeholder="Ваше имя или псевдоним" />
+      </div>
+
+      <div class="form-row">
+        <label for="quoteStory">
+          Предыстория
+          <span style="text-transform:none;font-style:italic;font-size:.85rem;color:#B09A6A"> (необязательно)</span>
+        </label>
+        <textarea id="quoteStory" name="quoteStory" maxlength="300"
+          placeholder="Что стоит за этими словами? Откуда они появились?..."
+          style="min-height:65px"></textarea>
+      </div>
+
+      <button class="submit-btn" id="submitBtn" type="button" onclick="submitQuote()">
+        <span>✦</span> Вписать в цитатник
+      </button>
+      <div class="msg msg-success" id="msgSuccess">✦ Ваша цитата навсегда вписана в Золотой Цитатник!</div>
+    </section>
+
+    <div class="quotes-header">
+      <div class="quotes-title">Голоса времени</div>
+      <div class="quotes-count" id="quotesCount">...</div>
+      <div class="divider"></div>
+    </div>
+
+    <div class="quotes-list" id="quotesList">
+      <div class="loading">Загружаем цитаты...</div>
+    </div>
+
+    <footer class="footer">
+      <p>Каждое слово здесь — <strong>вечное</strong>. Пишите с умом.</p>
+    </footer>
+  </div>
+
+  <script>
+    let quotes = [];
+
+    async function loadQuotes() {
+      try {
+        const res = await fetch('/api/quotes');
+        if (!res.ok) throw new Error('fetch failed');
+        quotes = await res.json();
+      } catch (e) {
+        quotes = [];
+      }
+      renderQuotes();
+    }
+
+    function renderQuotes() {
+      const list = document.getElementById('quotesList');
+      document.getElementById('quotesCount').textContent = quotes.length;
+      if (!quotes.length) {
+        list.innerHTML = '<div class="empty-state">Пока нет ни одной цитаты — будьте первым!</div>';
+        return;
+      }
+      const sorted = [...quotes].reverse();
+      list.innerHTML = sorted.map((q, i) => `
+        <div class="quote-card">
+          <span class="quote-num">#${quotes.length - i}</span>
+          <div class="quote-text">${esc(q.text)}</div>
+          ${q.story ? `<div class="quote-story">${esc(q.story)}</div>` : ''}
+          <div class="quote-meta">
+            <div class="quote-author">— ${esc(q.author)}</div>
+            <div class="quote-date">${formatDate(q.date)}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function esc(s) {
+      return String(s)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+    function formatDate(d) {
+      try {
+        return new Date(d).toLocaleDateString('ru-RU', {
+          day: 'numeric', month: 'long', year: 'numeric'
+        });
+      } catch(e) { return d; }
+    }
+
+    document.getElementById('quoteText').addEventListener('input', function() {
+      document.getElementById('charCount').textContent = this.value.length;
+    });
+
+    async function submitQuote() {
+      const text   = document.getElementById('quoteText').value.trim();
+      const author = document.getElementById('authorName').value.trim();
+      const story  = document.getElementById('quoteStory').value.trim();
+      const btn    = document.getElementById('submitBtn');
+      const errEl  = document.getElementById('msgError');
+      const sucEl  = document.getElementById('msgSuccess');
+
+      errEl.style.display = 'none';
+      sucEl.style.display = 'none';
+
+      if (!text)         { showErr('Пожалуйста, напишите цитату.'); return; }
+      if (text.length < 5) { showErr('Цитата слишком короткая.'); return; }
+      if (!author)       { showErr('Пожалуйста, укажите имя.'); return; }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span>⌛</span> Сохраняем...';
+
+      try {
+        const res = await fetch('/api/quotes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text, author, story })
+        });
+        if (!res.ok) throw new Error('server error');
+        const saved = await res.json();
+        quotes.push(saved);
+        renderQuotes();
+
+        document.getElementById('quoteText').value  = '';
+        document.getElementById('authorName').value = '';
+        document.getElementById('quoteStory').value = '';
+        document.getElementById('charCount').textContent = '0';
+        sucEl.style.display = 'block';
+        setTimeout(() => sucEl.style.display = 'none', 5000);
+      } catch(e) {
+        showErr('Ошибка при сохранении. Попробуйте ещё раз.');
+      }
+
+      btn.disabled = false;
+      btn.innerHTML = '<span>✦</span> Вписать в цитатник';
+    }
+
+    function showErr(msg) {
+      const el = document.getElementById('msgError');
+      el.textContent = msg;
+      el.style.display = 'block';
+    }
+
+    loadQuotes();
+  </script>
+</body>
+</html>

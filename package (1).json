@@ -1,0 +1,12 @@
+{
+  "name": "golden-quotes",
+  "version": "1.0.0",
+  "description": "Золотой Цитатник — место, где слова живут вечно",
+  "private": true,
+  "dependencies": {
+    "@vercel/kv": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
