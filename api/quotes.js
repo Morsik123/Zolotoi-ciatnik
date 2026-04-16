@@ -1,7 +1,11 @@
 // api/quotes.js — Vercel Serverless Function
 // Хранилище: Vercel KV (Redis) через @vercel/kv
 
-import { kv } from '@vercel/kv';
+import { createClient } from '@vercel/kv';
+
+const kv = createClient({
+  url: process.env.KV_URL_REDIS_URL,
+});
 
 const QUOTES_KEY = 'golden_quotes';
 
