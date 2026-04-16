@@ -1,18 +1,19 @@
-import { createClient } from '@vercel/kv';
+import { createClient } from 'redis';
+
+// Создаем клиент, используя твою переменную с redis://
+const client = createClient({
+  url: process.env.KV_URL_REDIS_URL
+});
+
+client.on('error', err => console.error('Redis Client Error', err));
+
+// Подключаемся один раз при запуске функции
+await client.connect();
+
+const QUOTES_KEY = 'golden_quotes';
 
 export default async function handler(req, res) {
-  // 1. Проверяем наличие переменных прямо в коде
-  const url = process.env.KV_URL_REDIS_URL;
-  const token = process.env.KV_REST_API_TOKEN;
-
-  if (!url || !token) {
-    return res.status(500).json({ error: "Конфигурация базы данных не найдена" });
-  }
-
-  const kv = createClient({ url, token });
-  const QUOTES_KEY = 'golden_quotes';
-
-  // 2. Настройка заголовков
+  // Настройки CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -21,7 +22,8 @@ export default async function handler(req, res) {
 
   try {
     if (req.method === 'GET') {
-      const quotes = await kv.get(QUOTES_KEY) || [];
+      const data = await client.get(QUOTES_KEY);
+      const quotes = data ? JSON.parse(data) : [];
       return res.status(200).json(quotes);
     }
 
@@ -30,7 +32,9 @@ export default async function handler(req, res) {
       
       if (!text || text.length < 5) return res.status(400).json({ error: 'Слишком коротко' });
 
-      const quotes = await kv.get(QUOTES_KEY) || [];
+      const data = await client.get(QUOTES_KEY);
+      const quotes = data ? JSON.parse(data) : [];
+
       const newQuote = {
         id: Date.now(),
         text: text.trim(),
@@ -40,11 +44,13 @@ export default async function handler(req, res) {
       };
 
       quotes.push(newQuote);
-      await kv.set(QUOTES_KEY, quotes);
+      // Сохраняем обратно как строку JSON
+      await client.set(QUOTES_KEY, JSON.stringify(quotes));
+      
       return res.status(201).json(newQuote);
     }
   } catch (err) {
-    console.error("Ошибка API:", err);
-    return res.status(500).json({ error: err.message });
+    console.error("Ошибка базы:", err);
+    return res.status(500).json({ error: "Ошибка базы данных" });
   }
 }
